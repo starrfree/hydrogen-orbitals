@@ -1,4 +1,4 @@
-import { randomDensity, randomDensityVStep } from "./random"
+import { getCumulativeDensity, getCumulativeDensityVStep, randomCumulativeDensity, randomDensity, randomDensityVStep } from "./random"
 
 export class OrbitalCalculator {
   n: number
@@ -63,7 +63,8 @@ export class OrbitalCalculator {
   }
 
   radial_wave_function(r: number) {
-    var x = Math.exp(-r / this.n) * this.laguerre_polynomial(this.n - this.l - 1, 2 * r / this.n) * (2 * r / this.n) ** this.l
+    var r_n = r / this.n
+    var x = Math.exp(-r_n) * this.laguerre_polynomial(this.n - this.l - 1, 2 * r_n) * (2 * r_n) ** this.l
     return x*x
   }
 
@@ -71,18 +72,19 @@ export class OrbitalCalculator {
     var fr = (x: number) => {return this.radial_wave_function(x)}
     var rmax = 2.5 * this.n * this.n
     var integralR = this.integrate(fr, 0, rmax*2, rmax / 800)
-    var rstep = rmax / 300
+    var cumulativeR = getCumulativeDensity((x: number) => {return fr(x) / integralR}, 0, rmax, rmax / 300)
     
     var fsh = (x: number) => {return this.spherical_harmonic(x)}
     var integralSH = this.integrate(fsh, -1, 1, 2 / 800)
-    var angleVStep = (x: number) => {return Math.max(Math.sqrt(1 - x*x) / 200, 0.00005)}
+    var shVStep = (x: number) => {return Math.max(Math.sqrt(1 - x*x) / 200, 0.00005)}
+    var cumulativeSH = getCumulativeDensityVStep((x: number) => {return fsh(x) / integralSH}, -1, 1, shVStep)
 
     var phifactor = 2 * Math.PI * 0.8
 
     var startFrom = new Date().getTime()
     for(var i = 0; i < count; i++) {
-      var r = randomDensity((x: number) => {return fr(x) / integralR}, 0, undefined, rstep)
-      var z_norm = randomDensityVStep((x: number) => {return fsh(x) / integralSH}, -1, 1, angleVStep)
+      var r = randomCumulativeDensity(cumulativeR.x, cumulativeR.cdf)
+      var z_norm = randomCumulativeDensity(cumulativeSH.x, cumulativeSH.cdf)
       var theta = Math.acos(z_norm)
       var phi = Math.random() * phifactor
       var rsintheta = r * Math.sin(theta)
@@ -93,7 +95,7 @@ export class OrbitalCalculator {
         r: r, theta: theta, phi: phi
       })
     }
-    console.log("Points", (new Date().getTime() - startFrom) / 1000)
+    console.log("Points", (new Date().getTime() - startFrom) / 1000, "s")
   }
 
   private integrate(f: (x: number) => number, min: number, max: number, step: number) {
