@@ -16,8 +16,8 @@ export class AtomComponent implements OnInit {
   renderer!: THREE.WebGLRenderer
   stats?: Stats
 
-  orbitalCalculator = new OrbitalCalculator(5, 1, 0)
-  pointCount = 700000
+  orbitalCalculator = new OrbitalCalculator(10, 1, 0)
+  pointCount = 1400000
 
   constructor() { }
 
@@ -53,13 +53,13 @@ export class AtomComponent implements OnInit {
     if (!this.sceneCanvas) {return}
     var n2 = this.orbitalCalculator.n * this.orbitalCalculator.n
     this.scene = new THREE.Scene()
-    this.camera = new THREE.PerspectiveCamera(40, this.sceneCanvas.nativeElement.clientWidth / this.sceneCanvas.nativeElement.clientHeight, 0.1, 20000)//30 * n2 / 9, 80 * n2 / 9
+    this.camera = new THREE.PerspectiveCamera(40, this.sceneCanvas.nativeElement.clientWidth / this.sceneCanvas.nativeElement.clientHeight, 0.1, 1000000)//30 * n2 / 9, 80 * n2 / 9
     this.camera.position.set(0, 0, 6 * n2)
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.sceneCanvas.nativeElement,
       antialias: true
     })
-    this.renderer.setClearColor(0xffffff)
+    this.renderer.setClearColor(0xeeeeee)
     this.renderer.setPixelRatio(this.sceneCanvas.nativeElement.devicePixelRatio)
     this.renderer.setSize(this.sceneCanvas.nativeElement.clientWidth, this.sceneCanvas.nativeElement.clientHeight)
 
@@ -69,8 +69,8 @@ export class AtomComponent implements OnInit {
 
   addPoints() {
     var n2 = this.orbitalCalculator.n * this.orbitalCalculator.n
-    var geometry = new THREE.SphereGeometry(0.03 * n2 * 0.13, 2, 2)
-    var material = new THREE.MeshBasicMaterial({color: 0x000000, transparent: true, opacity: 0.5})//new THREE.MeshDepthMaterial()
+    var geometry = new THREE.TetrahedronGeometry(0.03 * n2 * 0.13)//new THREE.SphereGeometry(0.03 * n2 * 0.13, 2, 2)
+    var material = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.5})//new THREE.MeshDepthMaterial()
     var mesh = new THREE.InstancedMesh(geometry, material, this.pointCount)
     this.scene.add(mesh)
 
@@ -88,8 +88,22 @@ export class AtomComponent implements OnInit {
       o.position.z = newy * sinphi + point.z * cosphi
       o.updateMatrix()
       mesh.setMatrixAt(i, o.matrix)
-      // var color = 0
-      // mesh.setColorAt(i, new THREE.Color(color, color, color))
+      var color: {r: number, g: number, b: number}
+      if (point.rlobe % 2 == 1) {
+        if (point.shlobe % 2 == 0) {
+          color = {r: 0.8, g: 0.3, b: 0.05}
+        } else {
+          color = {r: 0.7, g: 0., b: 0.}
+        }
+      } else {
+        if (point.shlobe % 2 == 0) {
+          color = {r: 0., g: 0.1, b: 0.6}
+        } else {
+          // color = {r: 0.2, g: 0.6, b: 0.2}
+          color = {r: 0.2, g: 0.6, b: 0.6}
+        }
+      }
+      mesh.setColorAt(i, new THREE.Color(color.r, color.g, color.b))
     })
   }
 }

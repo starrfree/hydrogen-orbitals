@@ -68,30 +68,37 @@ export class OrbitalCalculator {
     return x*x
   }
 
-  randomPoints(count: number, callback: (i: number, point: {x: number, y: number, z: number, r: number, theta: number, phi: number}) => any) {
+  randomPoints(count: number, callback: (i: number, point: any) => any) {
     var fr = (x: number) => {return this.radial_wave_function(x)}
     var rmax = 2.5 * this.n * this.n
-    var integralR = this.integrate(fr, 0, rmax*2, rmax / 800)
-    var cumulativeR = getCumulativeDensity((x: number) => {return fr(x) / integralR}, 0, rmax, rmax / 300)
+    var integralR = this.integrate(fr, 0, rmax, rmax / 800)
+    var rLobeTest = (r: number) => {return this.laguerre_polynomial(this.n - this.l - 1, 2 * r / this.n)}
+    var cumulativeR = getCumulativeDensity((x: number) => {return fr(x) / integralR}, 0, rmax, rmax / 800, rLobeTest)
+    var lastLobeR = cumulativeR.lobes[cumulativeR.lobes.length - 1]
     
     var fsh = (x: number) => {return this.spherical_harmonic(x)}
     var integralSH = this.integrate(fsh, -1, 1, 2 / 800)
-    var shVStep = (x: number) => {return Math.max(Math.sqrt(1 - x*x) / 200, 0.00005)}
-    var cumulativeSH = getCumulativeDensityVStep((x: number) => {return fsh(x) / integralSH}, -1, 1, shVStep)
+    var shVStep = (x: number) => {return Math.max(Math.sqrt(1 - x*x) / 200, 0.00002)}
+    var shLobeTest = (theta: number) => {return this.associated_legendre_polynomial(this.l, this.m, theta)}
+    var cumulativeSH = getCumulativeDensityVStep((x: number) => {return fsh(x) / integralSH}, -1, 1, shVStep, shLobeTest)
+    var lastLobeSH = cumulativeSH.lobes[cumulativeSH.lobes.length - 1]
 
     var phifactor = 2 * Math.PI * 0.8
 
     for(var i = 0; i < count; i++) {
-      var r = randomCumulativeDensity(cumulativeR.x, cumulativeR.cdf)
-      var z_norm = randomCumulativeDensity(cumulativeSH.x, cumulativeSH.cdf)
-      var theta = Math.acos(z_norm)
+      var rData = randomCumulativeDensity(cumulativeR.x, cumulativeR.cdf, cumulativeR.lobes)
+      var r = rData.x
+      var zNormData = randomCumulativeDensity(cumulativeSH.x, cumulativeSH.cdf, cumulativeSH.lobes)
+      var zNorm = zNormData.x
+      var theta = Math.acos(zNorm)
       var phi = Math.random() * phifactor
       var rsintheta = r * Math.sin(theta)
       callback(i, {
         x: rsintheta * Math.cos(phi),
         y: rsintheta * Math.sin(phi),
-        z: r * z_norm,
-        r: r, theta: theta, phi: phi
+        z: r * zNorm,
+        r: r, theta: theta, phi: phi,
+        rlobe: (rData.lobe ?? 0) + lastLobeR % 2, shlobe: (zNormData.lobe ?? 0) + lastLobeSH % 2
       })
     }
   }
