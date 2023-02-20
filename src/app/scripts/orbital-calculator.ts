@@ -8,7 +8,7 @@ export class OrbitalCalculator {
   constructor(n: number = 1, l: number = 0, m: number = 0) {
     this.n = n
     this.l = l
-    this.m = m
+    this.m = Math.abs(m)
   }
 
   private associated_legendre_polynomial(n: number, m: number, x: number) {
@@ -81,7 +81,6 @@ export class OrbitalCalculator {
 
     var phifactor = 2 * Math.PI * 0.8
 
-    var startFrom = new Date().getTime()
     for(var i = 0; i < count; i++) {
       var r = randomCumulativeDensity(cumulativeR.x, cumulativeR.cdf)
       var z_norm = randomCumulativeDensity(cumulativeSH.x, cumulativeSH.cdf)
@@ -95,7 +94,6 @@ export class OrbitalCalculator {
         r: r, theta: theta, phi: phi
       })
     }
-    console.log("Points", (new Date().getTime() - startFrom) / 1000, "s")
   }
 
   private integrate(f: (x: number) => number, min: number, max: number, step: number) {

@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { OrbitalCalculator } from '../scripts/orbital-calculator'
 import * as THREE from 'three';
 import CameraControls from 'camera-controls';
+import Stats from 'three/examples/jsm/libs/stats.module'
 
 @Component({
   selector: 'app-atom',
@@ -13,9 +14,10 @@ export class AtomComponent implements OnInit {
   scene!: THREE.Scene
   camera!: THREE.Camera
   renderer!: THREE.WebGLRenderer
+  stats?: Stats
 
-  orbitalCalculator = new OrbitalCalculator(4, 3, 1)
-  pointCount = 200000
+  orbitalCalculator = new OrbitalCalculator(5, 1, 0)
+  pointCount = 700000
 
   constructor() { }
 
@@ -39,6 +41,7 @@ export class AtomComponent implements OnInit {
       var controlsUpdate = cameraControls.update(dt);
       if (controlsUpdate) {
         this.renderer.render(this.scene, this.camera)
+        this.stats?.update()
       }
       requestAnimationFrame(render)
     }
@@ -56,15 +59,18 @@ export class AtomComponent implements OnInit {
       canvas: this.sceneCanvas.nativeElement,
       antialias: true
     })
-    this.renderer.setClearColor(0xeeeeee)
+    this.renderer.setClearColor(0xffffff)
     this.renderer.setPixelRatio(this.sceneCanvas.nativeElement.devicePixelRatio)
     this.renderer.setSize(this.sceneCanvas.nativeElement.clientWidth, this.sceneCanvas.nativeElement.clientHeight)
+
+    // this.stats = Stats()
+    // document.body.appendChild(this.stats.dom)    
   }
 
   addPoints() {
     var n2 = this.orbitalCalculator.n * this.orbitalCalculator.n
-    var geometry = new THREE.SphereGeometry(0.03 * n2 * 0.13, 5, 8)
-    var material = new THREE.MeshBasicMaterial({color: 0xffffff})//new THREE.MeshDepthMaterial()
+    var geometry = new THREE.SphereGeometry(0.03 * n2 * 0.13, 2, 2)
+    var material = new THREE.MeshBasicMaterial({color: 0x000000, transparent: true, opacity: 0.5})//new THREE.MeshDepthMaterial()
     var mesh = new THREE.InstancedMesh(geometry, material, this.pointCount)
     this.scene.add(mesh)
 
@@ -75,7 +81,6 @@ export class AtomComponent implements OnInit {
     var phi = -Math.PI / 2
     var cosphi = Math.cos(phi)
     var sinphi = Math.sin(phi)
-    var rfact = 0.02 * n2 / 70
     this.orbitalCalculator.randomPoints(this.pointCount, (i, point) => {
       o.position.x = point.x * costheta - point.y * sintheta
       var newy = point.x * sintheta + point.y * costheta
@@ -83,8 +88,8 @@ export class AtomComponent implements OnInit {
       o.position.z = newy * sinphi + point.z * cosphi
       o.updateMatrix()
       mesh.setMatrixAt(i, o.matrix)
-      var color = 0//point.r * rfact
-      mesh.setColorAt(i, new THREE.Color(color, color, color))
+      // var color = 0
+      // mesh.setColorAt(i, new THREE.Color(color, color, color))
     })
   }
 }
