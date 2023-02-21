@@ -82,18 +82,19 @@ export function getCumulativeDensityVStep(density: (x: number) => number, min: n
   }
 }
 
-export function randomCumulativeDensity(x: number[], cumulativeDensity: number[], lobes: number[] | undefined = undefined) {
+export function randomCumulativeDensity(x: number[], cumulativeDensity: number[], lobes: number[]) {
   var rnd = Math.random()
-  for (let i = 0; i < cumulativeDensity.length; i++) {
+  var len = cumulativeDensity.length
+  for (let i = 0; i < len; i++) {
     if (cumulativeDensity[i] >= rnd) {
       return {
         x: x[i],
-        lobe: lobes == undefined ? undefined : lobes[i]
+        lobe: lobes[i]
       }
     }
   }
   return {
-    x: x[x.length - 1],
-    lobe: lobes == undefined ? undefined : lobes[lobes.length - 1]
+    x: x[len - 1],
+    lobe: lobes[len - 1]
   }
 }

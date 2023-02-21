@@ -16,7 +16,7 @@ export class AtomComponent implements OnInit {
   renderer!: THREE.WebGLRenderer
   stats?: Stats
 
-  orbitalCalculator = new OrbitalCalculator(10, 1, 0)
+  orbitalCalculator = new OrbitalCalculator(6, 3, 1)
   pointCount = 1400000
 
   constructor() { }
@@ -33,7 +33,11 @@ export class AtomComponent implements OnInit {
     resizeCanvas()
 
     this.createScene()
+    
+    var startFrom = new Date().getTime()
     this.addPoints()
+    console.log("Points", (new Date().getTime() - startFrom) / 1000)
+
     const cameraControls = new CameraControls(this.camera as THREE.PerspectiveCamera, this.renderer.domElement);
     const clock = new THREE.Clock();
     var render = () => {
@@ -53,8 +57,8 @@ export class AtomComponent implements OnInit {
     if (!this.sceneCanvas) {return}
     var n2 = this.orbitalCalculator.n * this.orbitalCalculator.n
     this.scene = new THREE.Scene()
-    this.camera = new THREE.PerspectiveCamera(40, this.sceneCanvas.nativeElement.clientWidth / this.sceneCanvas.nativeElement.clientHeight, 0.1, 1000000)//30 * n2 / 9, 80 * n2 / 9
-    this.camera.position.set(0, 0, 6 * n2)
+    this.camera = new THREE.PerspectiveCamera(40, this.sceneCanvas.nativeElement.clientWidth / this.sceneCanvas.nativeElement.clientHeight, 0.1, 1000 * this.orbitalCalculator.n ** 2)
+    this.camera.position.set(0, n2, 6 * n2)
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.sceneCanvas.nativeElement,
       antialias: true
@@ -69,13 +73,13 @@ export class AtomComponent implements OnInit {
 
   addPoints() {
     var n2 = this.orbitalCalculator.n * this.orbitalCalculator.n
-    var geometry = new THREE.TetrahedronGeometry(0.03 * n2 * 0.13)//new THREE.SphereGeometry(0.03 * n2 * 0.13, 2, 2)
-    var material = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.5})//new THREE.MeshDepthMaterial()
+    var geometry = new THREE.TetrahedronGeometry(0.03 * n2 * 0.11)
+    var material = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.7})
     var mesh = new THREE.InstancedMesh(geometry, material, this.pointCount)
     this.scene.add(mesh)
 
     var o = new THREE.Object3D()
-    var theta = -Math.PI / 3
+    var theta = Math.PI / 2
     var costheta = Math.cos(theta)
     var sintheta = Math.sin(theta)
     var phi = -Math.PI / 2
@@ -89,19 +93,28 @@ export class AtomComponent implements OnInit {
       o.updateMatrix()
       mesh.setMatrixAt(i, o.matrix)
       var color: {r: number, g: number, b: number}
-      if (point.rlobe % 2 == 1) {
-        if (point.shlobe % 2 == 0) {
-          color = {r: 0.8, g: 0.3, b: 0.05}
-        } else {
-          color = {r: 0.7, g: 0., b: 0.}
-        }
+      // if (point.rlobe % 2 == 1) {
+      //   if (point.shlobe % 2 == 0) {
+      //     // color = {r: 0.8, g: 0.3, b: 0.05}
+      //     color = {r: 0.2, g: 0.6, b: 0.2}
+      //   } else {
+      //     // color = {r: 0.7, g: 0., b: 0.}
+      //     color = {r: 0.2, g: 0.6, b: 0.6}
+      //   }
+      // } else {
+      //   if (point.shlobe % 2 == 0) {
+      //     color = {r: 0., g: 0.1, b: 0.6}
+      //   } else {
+      //     color = {r: 0.8, g: 0.3, b: 0.05}
+      //     // color = {r: 0.2, g: 0.6, b: 0.2}
+      //     // color = {r: 0.2, g: 0.6, b: 0.6}
+      //   }
+      // }
+
+      if ((point.rlobe + point.shlobe) % 2 == 1) {
+        color = {r: 0.8, g: 0.3, b: 0.05}
       } else {
-        if (point.shlobe % 2 == 0) {
-          color = {r: 0., g: 0.1, b: 0.6}
-        } else {
-          // color = {r: 0.2, g: 0.6, b: 0.2}
-          color = {r: 0.2, g: 0.6, b: 0.6}
-        }
+        color = {r: 0., g: 0.15, b: 0.6}
       }
       mesh.setColorAt(i, new THREE.Color(color.r, color.g, color.b))
     })

@@ -11,7 +11,7 @@ export class OrbitalCalculator {
     this.m = Math.abs(m)
   }
 
-  private associated_legendre_polynomial(n: number, m: number, x: number) {
+  private associatedLegendrePolynomial(n: number, m: number, x: number) {
     var pmm = 1.0
     if (m > 0) {
       var somx2 = Math.sqrt((1.0 - x) * (1.0 + x))
@@ -39,7 +39,7 @@ export class OrbitalCalculator {
     }
   }
 
-  private laguerre_polynomial(n: number, x: number) {
+  private laguerrePolynomial(n: number, x: number) {
     if (n == 0) {
       return 1
     } else if (n == 1) {
@@ -57,48 +57,71 @@ export class OrbitalCalculator {
     }
   }
 
-  spherical_harmonic(theta: number) {
-    var x = this.associated_legendre_polynomial(this.l, this.m, theta)//Math.cos(theta)
+  private generalizedLaguerrePolynomial(a: number, n: number, x: number) {
+    if (n == 0) {
+      return 1
+    } else if (n == 1) {
+      return 1 - x + a
+    } else {
+      var L0 = 1
+      var L1 = 1 - x + a
+      var Ln: number = 0
+      for (var i = 2; i <= n; i++) {
+        Ln = ((2 * i - 1 - x + a) * L1 - (i - 1 + a) * L0) / i
+        L0 = L1
+        L1 = Ln
+      }
+      return Ln
+    }
+  }
+
+  sphericalHarmonic(theta: number) {
+    var x = this.associatedLegendrePolynomial(this.l, this.m, theta)//Math.cos(theta)
     return x*x
   }
 
-  radial_wave_function(r: number) {
+  laguerrePart(r: number) {
+    return this.generalizedLaguerrePolynomial(2 * this.l + 1, this.n - this.l - 1, 2 * r)
+  }
+
+  radialWaveFunction(r: number) {
     var r_n = r / this.n
-    var x = Math.exp(-r_n) * this.laguerre_polynomial(this.n - this.l - 1, 2 * r_n) * (2 * r_n) ** this.l
-    return x*x
+    // var x = Math.exp(-r_n) * this.laguerrePolynomial(this.n - this.l - 1, 2 * r_n) * (2 * r_n) ** this.l
+    var x = Math.exp(-r_n) * this.laguerrePart(r_n) * (2 * r_n) ** this.l
+    return x*x * r*r
   }
 
-  randomPoints(count: number, callback: (i: number, point: any) => any) {
-    var fr = (x: number) => {return this.radial_wave_function(x)}
-    var rmax = 2.5 * this.n * this.n
+  randomPoints(count: number, callback: (i: number, point: any) => void) {
+    var fr = (x: number) => {return this.radialWaveFunction(x)}
+    var rmax = 3 * this.n * this.n
     var integralR = this.integrate(fr, 0, rmax, rmax / 800)
-    var rLobeTest = (r: number) => {return this.laguerre_polynomial(this.n - this.l - 1, 2 * r / this.n)}
+    var rLobeTest = (r: number) => {return this.laguerrePart(r / this.n)}
     var cumulativeR = getCumulativeDensity((x: number) => {return fr(x) / integralR}, 0, rmax, rmax / 800, rLobeTest)
-    var lastLobeR = cumulativeR.lobes[cumulativeR.lobes.length - 1]
+    var lastLobeR = cumulativeR.lobes[cumulativeR.lobes.length - 1] % 2
     
-    var fsh = (x: number) => {return this.spherical_harmonic(x)}
-    var integralSH = this.integrate(fsh, -1, 1, 2 / 800)
-    var shVStep = (x: number) => {return Math.max(Math.sqrt(1 - x*x) / 200, 0.00002)}
-    var shLobeTest = (theta: number) => {return this.associated_legendre_polynomial(this.l, this.m, theta)}
+    var fsh = (x: number) => {return this.sphericalHarmonic(x)}
+    var integralSH = this.integrate(fsh, -1, 1, 2 / 2000)
+    var shVStep = (x: number) => {return Math.max(Math.sqrt(1 - x ** 2) / 200, 0.00002)}
+    var shLobeTest = (theta: number) => {return this.associatedLegendrePolynomial(this.l, this.m, theta)}
     var cumulativeSH = getCumulativeDensityVStep((x: number) => {return fsh(x) / integralSH}, -1, 1, shVStep, shLobeTest)
-    var lastLobeSH = cumulativeSH.lobes[cumulativeSH.lobes.length - 1]
+    var lastLobeSH = cumulativeSH.lobes[cumulativeSH.lobes.length - 1] % 2
 
-    var phifactor = 2 * Math.PI * 0.8
+    var phifactor = Math.PI// * 0.8
 
     for(var i = 0; i < count; i++) {
       var rData = randomCumulativeDensity(cumulativeR.x, cumulativeR.cdf, cumulativeR.lobes)
       var r = rData.x
       var zNormData = randomCumulativeDensity(cumulativeSH.x, cumulativeSH.cdf, cumulativeSH.lobes)
-      var zNorm = zNormData.x
+      var zNorm = zNormData.x + Math.random() / 300
       var theta = Math.acos(zNorm)
-      var phi = Math.random() * phifactor
+      var phi = (Math.random() * 2 - 1) * phifactor
       var rsintheta = r * Math.sin(theta)
       callback(i, {
         x: rsintheta * Math.cos(phi),
         y: rsintheta * Math.sin(phi),
         z: r * zNorm,
         r: r, theta: theta, phi: phi,
-        rlobe: (rData.lobe ?? 0) + lastLobeR % 2, shlobe: (zNormData.lobe ?? 0) + lastLobeSH % 2
+        rlobe: rData.lobe + lastLobeR, shlobe: zNormData.lobe + lastLobeSH
       })
     }
   }
