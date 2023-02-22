@@ -106,7 +106,7 @@ export class OrbitalCalculator {
     var cumulativeSH = getCumulativeDensityVStep((x: number) => {return fsh(x) / integralSH}, -1, 1, shVStep, shLobeTest)
     var lastLobeSH = cumulativeSH.lobes[cumulativeSH.lobes.length - 1] % 2
 
-    var phifactor = Math.PI// * 0.8
+    var phifactor = Math.PI * 0.8
 
     for(var i = 0; i < count; i++) {
       var rData = randomCumulativeDensity(cumulativeR.x, cumulativeR.cdf, cumulativeR.lobes)

@@ -1,1 +1,4 @@
-<app-atom></app-atom>
+<app-atom class="atom-extended" [n]="6" [l]="3" [m]="1"></app-atom>
+<div *ngFor="let i of atomicNumbers">
+  <app-atom class="atom-preview" [n]="i.n" [l]="i.l" [m]="i.m" [preview]="true"></app-atom>
+</div>

@@ -1,4 +1,4 @@
 .canvas {
-  width: calc(min(100vw, 100vh));
-  height: calc(min(100vw, 100vh));
+  width: inherit;
+  height: inherit;
 }

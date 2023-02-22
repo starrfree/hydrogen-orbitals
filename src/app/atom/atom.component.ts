@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { OrbitalCalculator } from '../scripts/orbital-calculator'
 import * as THREE from 'three';
 import CameraControls from 'camera-controls';
@@ -10,19 +10,28 @@ import Stats from 'three/examples/jsm/libs/stats.module'
   styleUrls: ['./atom.component.css']
 })
 export class AtomComponent implements OnInit {
+  @Input() n: number = 1
+  @Input() l: number = 0
+  @Input() m: number = 0
+  @Input() preview: boolean = false
+
   @ViewChild('atomCanvas') public sceneCanvas?: ElementRef
   scene!: THREE.Scene
   camera!: THREE.Camera
   renderer!: THREE.WebGLRenderer
   stats?: Stats
 
-  orbitalCalculator = new OrbitalCalculator(6, 3, 1)
-  pointCount = 1400000
+  orbitalCalculator!: OrbitalCalculator
+  pointCount!: number
 
   constructor() { }
 
   ngOnInit(): void {
-    CameraControls.install( { THREE: THREE } );
+    this.orbitalCalculator = new OrbitalCalculator(this.n, this.l, this.m)
+    this.pointCount = this.preview ? 100000 : 1400000
+    if (!this.preview) {
+      CameraControls.install( { THREE: THREE } );
+    }
   }
 
   ngAfterViewInit(): void {
@@ -36,16 +45,36 @@ export class AtomComponent implements OnInit {
     
     var startFrom = new Date().getTime()
     this.addPoints()
-    console.log("Points", (new Date().getTime() - startFrom) / 1000)
+    console.log(`(${this.n}, ${this.l}, ${this.m})`, (new Date().getTime() - startFrom) / 1000)
 
-    const cameraControls = new CameraControls(this.camera as THREE.PerspectiveCamera, this.renderer.domElement);
-    const clock = new THREE.Clock();
+    const cameraControls = new CameraControls(this.camera as THREE.PerspectiveCamera, this.renderer.domElement)
+    if (this.preview) {
+      cameraControls.mouseButtons.wheel = CameraControls.ACTION.NONE
+      cameraControls.mouseButtons.middle = CameraControls.ACTION.NONE
+      cameraControls.touches.two = CameraControls.ACTION.NONE
+      cameraControls.touches.three = CameraControls.ACTION.NONE
+    }
+    const clock = new THREE.Clock()
+    var lastUpdate = new Date().getTime()
+    var didReset = true
     var render = () => {
       var dt = clock.getDelta();
-      var controlsUpdate = cameraControls.update(dt);
+      var controlsUpdate = cameraControls.update(dt)
       if (controlsUpdate) {
         this.renderer.render(this.scene, this.camera)
         this.stats?.update()
+      }
+      if (this.preview) {
+        if (cameraControls.currentAction) {
+          lastUpdate = new Date().getTime()
+          didReset = false
+        }
+        if (!didReset && (new Date().getTime() - lastUpdate) / 1000 > 3) {
+          cameraControls.smoothTime = 0.15
+          cameraControls.reset(true)
+          lastUpdate = new Date().getTime()
+          didReset = true
+        }
       }
       requestAnimationFrame(render)
     }
@@ -55,10 +84,16 @@ export class AtomComponent implements OnInit {
 
   createScene() {
     if (!this.sceneCanvas) {return}
-    var n2 = this.orbitalCalculator.n * this.orbitalCalculator.n
+    var n2 = this.n * this.n
     this.scene = new THREE.Scene()
-    this.camera = new THREE.PerspectiveCamera(40, this.sceneCanvas.nativeElement.clientWidth / this.sceneCanvas.nativeElement.clientHeight, 0.1, 1000 * this.orbitalCalculator.n ** 2)
-    this.camera.position.set(0, n2, 6 * n2)
+    this.camera = new THREE.PerspectiveCamera(40, this.sceneCanvas.nativeElement.clientWidth / this.sceneCanvas.nativeElement.clientHeight, 0.1, 1000 * n2)
+    var camD: number = 7 * n2
+    if (this.n <= 2) {
+      camD = 9 * n2
+    } else if (this.n <= 4 && this.l <= 1) {
+      camD = 8 * n2
+    }
+    this.camera.position.set(0, n2, camD)
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.sceneCanvas.nativeElement,
       antialias: true
@@ -72,9 +107,14 @@ export class AtomComponent implements OnInit {
   }
 
   addPoints() {
-    var n2 = this.orbitalCalculator.n * this.orbitalCalculator.n
-    var geometry = new THREE.TetrahedronGeometry(0.03 * n2 * 0.11)
-    var material = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.7})
+    var n2 = this.n * this.n
+    var geometry
+    if (this.preview) {
+      geometry = new THREE.SphereGeometry(0.03 * n2 * 0.3, 5, 8)
+    } else {
+      geometry = new THREE.TetrahedronGeometry(0.03 * n2 * 0.11)
+    }
+    var material = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.8})
     var mesh = new THREE.InstancedMesh(geometry, material, this.pointCount)
     this.scene.add(mesh)
 
