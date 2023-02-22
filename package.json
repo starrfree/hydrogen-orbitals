@@ -20,6 +20,7 @@
     "@angular/router": "~13.2.0",
     "@types/three": "^0.149.0",
     "camera-controls": "^2.2.1",
+    "ngx-infinite-scroll": "^13.1.0",
     "rxjs": "~7.5.0",
     "three": "^0.149.0",
     "tslib": "^2.3.0",

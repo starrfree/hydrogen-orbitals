@@ -3,6 +3,7 @@ import { OrbitalCalculator } from '../scripts/orbital-calculator'
 import * as THREE from 'three';
 import CameraControls from 'camera-controls';
 import Stats from 'three/examples/jsm/libs/stats.module'
+import { OrbitalRenderer } from '../scripts/orbital-renderer';
 
 @Component({
   selector: 'app-atom',
@@ -28,7 +29,7 @@ export class AtomComponent implements OnInit {
 
   ngOnInit(): void {
     this.orbitalCalculator = new OrbitalCalculator(this.n, this.l, this.m)
-    this.pointCount = this.preview ? 100000 : 1400000
+    this.pointCount = this.preview ? 100000 : 800000//1400000
     if (!this.preview) {
       CameraControls.install( { THREE: THREE } );
     }
@@ -40,12 +41,13 @@ export class AtomComponent implements OnInit {
       this.sceneCanvas!.nativeElement.height = this.sceneCanvas!.nativeElement.clientHeight
     }
     resizeCanvas()
-
+    
     this.createScene()
     
-    var startFrom = new Date().getTime()
-    this.addPoints()
-    console.log(`(${this.n}, ${this.l}, ${this.m})`, (new Date().getTime() - startFrom) / 1000)
+    // var startFrom = new Date().getTime()
+    var orbitalRenderer = new OrbitalRenderer(this.pointCount)
+    orbitalRenderer.addPoints(this.n, this.l, this.m, this.scene, false)
+    // console.log(`(${this.n}, ${this.l}, ${this.m})`, (new Date().getTime() - startFrom) / 1000)
 
     const cameraControls = new CameraControls(this.camera as THREE.PerspectiveCamera, this.renderer.domElement)
     if (this.preview) {
@@ -101,62 +103,5 @@ export class AtomComponent implements OnInit {
     this.renderer.setClearColor(0xeeeeee)
     this.renderer.setPixelRatio(this.sceneCanvas.nativeElement.devicePixelRatio)
     this.renderer.setSize(this.sceneCanvas.nativeElement.clientWidth, this.sceneCanvas.nativeElement.clientHeight)
-
-    // this.stats = Stats()
-    // document.body.appendChild(this.stats.dom)    
-  }
-
-  addPoints() {
-    var n2 = this.n * this.n
-    var geometry
-    if (this.preview) {
-      geometry = new THREE.SphereGeometry(0.03 * n2 * 0.3, 5, 8)
-    } else {
-      geometry = new THREE.TetrahedronGeometry(0.03 * n2 * 0.11)
-    }
-    var material = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.8})
-    var mesh = new THREE.InstancedMesh(geometry, material, this.pointCount)
-    this.scene.add(mesh)
-
-    var o = new THREE.Object3D()
-    var theta = Math.PI / 2
-    var costheta = Math.cos(theta)
-    var sintheta = Math.sin(theta)
-    var phi = -Math.PI / 2
-    var cosphi = Math.cos(phi)
-    var sinphi = Math.sin(phi)
-    this.orbitalCalculator.randomPoints(this.pointCount, (i, point) => {
-      o.position.x = point.x * costheta - point.y * sintheta
-      var newy = point.x * sintheta + point.y * costheta
-      o.position.y = newy * cosphi - point.z * sinphi
-      o.position.z = newy * sinphi + point.z * cosphi
-      o.updateMatrix()
-      mesh.setMatrixAt(i, o.matrix)
-      var color: {r: number, g: number, b: number}
-      // if (point.rlobe % 2 == 1) {
-      //   if (point.shlobe % 2 == 0) {
-      //     // color = {r: 0.8, g: 0.3, b: 0.05}
-      //     color = {r: 0.2, g: 0.6, b: 0.2}
-      //   } else {
-      //     // color = {r: 0.7, g: 0., b: 0.}
-      //     color = {r: 0.2, g: 0.6, b: 0.6}
-      //   }
-      // } else {
-      //   if (point.shlobe % 2 == 0) {
-      //     color = {r: 0., g: 0.1, b: 0.6}
-      //   } else {
-      //     color = {r: 0.8, g: 0.3, b: 0.05}
-      //     // color = {r: 0.2, g: 0.6, b: 0.2}
-      //     // color = {r: 0.2, g: 0.6, b: 0.6}
-      //   }
-      // }
-
-      if ((point.rlobe + point.shlobe) % 2 == 1) {
-        color = {r: 0.8, g: 0.3, b: 0.05}
-      } else {
-        color = {r: 0., g: 0.15, b: 0.6}
-      }
-      mesh.setColorAt(i, new THREE.Color(color.r, color.g, color.b))
-    })
   }
 }

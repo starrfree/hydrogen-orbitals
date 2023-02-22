@@ -1,0 +1,19 @@
+.container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  /* margin: 5px 10px 5px 10px; */
+}
+
+.atom-preview {
+  width: inherit;
+  height: inherit;
+  box-shadow: 2px 2px 12px rgba(17, 17, 17, 0.3);
+  border-radius: 10px;
+}
+
+.bottom-right {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}

@@ -1,4 +1,5 @@
 .canvas {
   width: inherit;
   height: inherit;
+  border-radius: 15px;
 }

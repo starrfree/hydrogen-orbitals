@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { OrbitalRendererService } from './orbital-renderer.service';
 
 @Component({
   selector: 'app-root',
@@ -6,21 +7,41 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'hydrogen-atom';
+  @ViewChild('serviceCanvas') public serviceCanvas!: ElementRef
   
-  atomicNumbers: {n: number, l: number, m: number}[] = []
+  showExtended = false
+  activeAtomicNumbers = {
+    n: 1,
+    l: 0,
+    m: 0
+  }
+  atomicNumbers: {n: number, l: number, m: number}[][] = []
+
+  constructor(private orbitalRendererService: OrbitalRendererService) {
+  }
 
   ngOnInit() {
-    for(var n = 1; n <= 4; n++) {
+    for(var n = 1; n <= 6; n++) {
+      var group: {n: number, l: number, m: number}[] = []
       for(var l = 0; l < n; l++) {
         for(var m = 0; m <= l; m++) {
-          this.atomicNumbers.push({
+          group.push({
             n: n,
             l: l,
             m: m
           })
         }
       }
+      this.atomicNumbers.push(group)
     }
+  }
+  
+  ngAfterViewInit() {
+    this.orbitalRendererService.canvas = this.serviceCanvas.nativeElement
+  }
+  
+  expand(atomicNumber: {n: number, l: number, m: number}) {
+    this.activeAtomicNumbers = atomicNumber
+    this.showExtended = !this.showExtended
   }
 }

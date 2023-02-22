@@ -91,7 +91,7 @@ export class OrbitalCalculator {
     return x*x * r*r
   }
 
-  randomPoints(count: number, callback: (i: number, point: any) => void) {
+  randomPoints(count: number, phiRange: number, callback: (i: number, point: any) => void) {
     var fr = (x: number) => {return this.radialWaveFunction(x)}
     var rmax = 3 * this.n * this.n
     var integralR = this.integrate(fr, 0, rmax, rmax / 800)
@@ -106,7 +106,7 @@ export class OrbitalCalculator {
     var cumulativeSH = getCumulativeDensityVStep((x: number) => {return fsh(x) / integralSH}, -1, 1, shVStep, shLobeTest)
     var lastLobeSH = cumulativeSH.lobes[cumulativeSH.lobes.length - 1] % 2
 
-    var phifactor = Math.PI * 0.8
+    var phifactor = Math.PI * phiRange
 
     for(var i = 0; i < count; i++) {
       var rData = randomCumulativeDensity(cumulativeR.x, cumulativeR.cdf, cumulativeR.lobes)
