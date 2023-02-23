@@ -5,10 +5,15 @@ infiniteScroll
 [infiniteScrollThrottle]="10"
 (scrolled)="onScroll()">
   <canvas #serviceCanvas class="service-canvas" width="500px" height="500px"></canvas>
-  <div *ngFor="let group of atomicNumbers">
-    <div class="grid-container">
-      <div *ngFor="let atomicNumber of group">
-        <app-atom-preview [n]="atomicNumber.n" [l]="atomicNumber.l" [m]="atomicNumber.m" (click)="expand(atomicNumber)"></app-atom-preview>
+  <div class="container">
+    <div *ngFor="let groupN of atomicNumbers">
+      <div class="divider">{{groupN[0][0].n}}</div>
+      <div *ngFor="let groupStep of groupN">
+        <div class="grid-container">
+          <div *ngFor="let atomicNumber of groupStep">
+            <app-atom-preview [n]="atomicNumber.n" [l]="atomicNumber.l" [m]="atomicNumber.m" (click)="expand(atomicNumber)"></app-atom-preview>
+          </div>
+        </div>
       </div>
     </div>
   </div>

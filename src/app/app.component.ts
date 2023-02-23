@@ -15,29 +15,39 @@ export class AppComponent {
     l: 0,
     m: 0
   }
-  atomicNumbers: {n: number, l: number, m: number}[][] = []
+  atomicNumbers: {n: number, l: number, m: number}[][][] = []
 
   constructor(private orbitalRendererService: OrbitalRendererService) {
   }
 
   ngOnInit() {
-    for(var n = 1; n <= 6; n++) {
-      var group: {n: number, l: number, m: number}[] = []
-      for(var l = 0; l < n; l++) {
-        for(var m = 0; m <= l; m++) {
-          group.push({
-            n: n,
-            l: l,
-            m: m
-          })
-        }
-      }
-      this.atomicNumbers.push(group)
+    for(var n = 1; n <= 5; n++) {
+      this.addGroupN(n)
     }
   }
   
   ngAfterViewInit() {
     this.orbitalRendererService.canvas = this.serviceCanvas.nativeElement
+  }
+
+  addGroupN(n: number) {
+    var groupN: {n: number, l: number, m: number}[][] = []
+    for(var step = 0; step < n; step++) {
+      groupN.push(this.addGroupStep(n, step))
+    }
+    this.atomicNumbers.push(groupN)
+  }
+
+  addGroupStep(n: number, step: number) {
+    var groupStep: {n: number, l: number, m: number}[] = []
+    for(var l = step; l < n; l++) {
+      groupStep.push({
+        n: n,
+        l: l,
+        m: l - step
+      })
+    }
+    return groupStep
   }
   
   expand(atomicNumber: {n: number, l: number, m: number}) {
@@ -46,18 +56,15 @@ export class AppComponent {
   }
 
   onScroll() {
-    var n: number = this.atomicNumbers[this.atomicNumbers.length - 1][0].n + 1
-    var group: {n: number, l: number, m: number}[] = []
-    for(var l = 0; l < n; l++) {
-      for(var m = 0; m <= l; m++) {
-        group.push({
-          n: n,
-          l: l,
-          m: m
-        })
-      }
+    var lastGroupN = this.atomicNumbers[this.atomicNumbers.length - 1]
+    var lastGroupStep = lastGroupN[lastGroupN.length - 1]
+    var lastAtomicNumber = lastGroupStep[lastGroupStep.length - 1]
+    var step = lastAtomicNumber.l - lastAtomicNumber.m
+    var n = lastAtomicNumber.n
+    if (lastGroupStep.length == 1) {
+      this.atomicNumbers.push([this.addGroupStep(n+1, 0)])
     }
-    this.atomicNumbers.push(group)
-    this.atomicNumbers.length
+    lastGroupN.push(this.addGroupStep(n, step + 1))
+    // this.atomicNumbers[this.atomicNumbers.length - 1] = lastGroupN
   }
 }

@@ -12,8 +12,18 @@
   border-radius: 10px;
 }
 
+.description {
+  user-select: none;
+}
+
 .bottom-right {
   position: absolute;
   bottom: 5px;
   right: 5px;
+}
+
+.bottom-left {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
 }

@@ -93,7 +93,7 @@ export class OrbitalCalculator {
 
   randomPoints(count: number, phiRange: number, callback: (i: number, point: any) => void) {
     var fr = (x: number) => {return this.radialWaveFunction(x)}
-    var rmax = 3 * this.n * this.n
+    var rmax = 3.05 * this.n * this.n
     var integralR = this.integrate(fr, 0, rmax, rmax / 800)
     var rLobeTest = (r: number) => {return this.laguerrePart(r / this.n)}
     var cumulativeR = getCumulativeDensity((x: number) => {return fr(x) / integralR}, 0, rmax, rmax / 800, rLobeTest)
