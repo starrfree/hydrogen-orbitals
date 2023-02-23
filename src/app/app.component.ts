@@ -44,4 +44,20 @@ export class AppComponent {
     this.activeAtomicNumbers = atomicNumber
     this.showExtended = !this.showExtended
   }
+
+  onScroll() {
+    var n: number = this.atomicNumbers[this.atomicNumbers.length - 1][0].n + 1
+    var group: {n: number, l: number, m: number}[] = []
+    for(var l = 0; l < n; l++) {
+      for(var m = 0; m <= l; m++) {
+        group.push({
+          n: n,
+          l: l,
+          m: m
+        })
+      }
+    }
+    this.atomicNumbers.push(group)
+    this.atomicNumbers.length
+  }
 }

@@ -1,12 +1,19 @@
-<canvas #serviceCanvas class="service-canvas" width="500px" height="500px"></canvas>
-<div *ngFor="let group of atomicNumbers">
-  <div class="grid-container">
-    <div *ngFor="let atomicNumber of group">
-      <app-atom-preview [n]="atomicNumber.n" [l]="atomicNumber.l" [m]="atomicNumber.m" (click)="expand(atomicNumber)"></app-atom-preview>
+<div
+infiniteScroll
+[infiniteScrollDistance]="2"
+[infiniteScrollUpDistance]="1.5"
+[infiniteScrollThrottle]="10"
+(scrolled)="onScroll()">
+  <canvas #serviceCanvas class="service-canvas" width="500px" height="500px"></canvas>
+  <div *ngFor="let group of atomicNumbers">
+    <div class="grid-container">
+      <div *ngFor="let atomicNumber of group">
+        <app-atom-preview [n]="atomicNumber.n" [l]="atomicNumber.l" [m]="atomicNumber.m" (click)="expand(atomicNumber)"></app-atom-preview>
+      </div>
     </div>
   </div>
-</div>
-<div *ngIf="showExtended" class="extended-container glass">
-  <div class="click-background" (click)="showExtended = false"></div>
-  <app-atom class="atom-extended" [n]="activeAtomicNumbers.n" [l]="activeAtomicNumbers.l" [m]="activeAtomicNumbers.m"></app-atom>
+  <div *ngIf="showExtended" class="extended-container glass">
+    <div class="click-background" (click)="showExtended = false"></div>
+    <app-atom class="atom-extended" [n]="activeAtomicNumbers.n" [l]="activeAtomicNumbers.l" [m]="activeAtomicNumbers.m"></app-atom>
+  </div>
 </div>
