@@ -1,15 +1,25 @@
-.container {
-  position: relative;
-  width: 200px;
-  height: 200px;
-  /* margin: 5px 10px 5px 10px; */
+@media (min-width: 440px) {
+  .container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 440px) {
+  .container {
+    position: relative;
+    width: calc(95vw);
+    height: calc(95vw);
+  }
 }
 
 .atom-preview {
   width: inherit;
   height: inherit;
-  box-shadow: 2px 2px 12px rgba(17, 17, 17, 0.3);
+  background-color: #eee;
   border-radius: 10px;
+  box-shadow: 2px 2px 12px rgba(17, 17, 17, 0.3);
 }
 
 .description {

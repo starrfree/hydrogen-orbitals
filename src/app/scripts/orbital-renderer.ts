@@ -17,7 +17,8 @@ export class OrbitalRenderer {
   addRenderer() {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
-      antialias: true
+      antialias: true,
+      alpha: true
     })
   }
 
@@ -35,7 +36,7 @@ export class OrbitalRenderer {
     var camY = 0
     this.camera.position.set(0, camY, camZ)
     this.camera.rotateX(-Math.atan2(camY, camZ))
-    this.renderer.setClearColor(0xeeeeee)
+    this.renderer.setClearColor(0xeeeeee, 0)
     this.renderer.setPixelRatio((this.canvas as any).devicePixelRatio)
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight)
   }

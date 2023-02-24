@@ -5,7 +5,10 @@ infiniteScroll
 [infiniteScrollThrottle]="10"
 (scrolled)="onScroll()">
   <canvas #serviceCanvas class="service-canvas" width="500px" height="500px"></canvas>
-  <div class="container">
+  <div class="main-title">
+    Hydrogen Orbitals
+  </div>
+  <div class="list-container">
     <div *ngFor="let groupN of atomicNumbers">
       <div class="divider">{{groupN[0][0].n}}</div>
       <div *ngFor="let groupStep of groupN">
