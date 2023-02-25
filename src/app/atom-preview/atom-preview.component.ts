@@ -11,6 +11,7 @@ export class AtomPreviewComponent implements OnInit {
   @Input() n: number = 1
   @Input() l: number = 0
   @Input() m: number = 0
+  charging = true
 
   get type(): string {
     var type = `${this.n}`
@@ -47,7 +48,8 @@ export class AtomPreviewComponent implements OnInit {
   render() {
     setTimeout(() => {
       this.orbitalRendererService.render(this.canvas.nativeElement, this.n, this.l, this.m)
-    }, 0);
+      this.charging = false
+    }, 10);
   }
 
   getAlphabeticalOrder(num: number): string {

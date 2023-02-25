@@ -47,7 +47,8 @@ export class OrbitalRenderer {
     if (preview) {
       geometry = new THREE.SphereGeometry(0.03 * n2 * 0.3, 5, 8)
     } else {
-      geometry = new THREE.TetrahedronGeometry(0.03 * n2 * 0.2)
+      geometry = new THREE.SphereGeometry(0.03 * n2 * 0.2, 5, 3)
+      // geometry = new THREE.TetrahedronGeometry(0.03 * n2 * 0.4)//0.2
     }
     var material = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.8})
     var mesh = new THREE.InstancedMesh(geometry, material, this.pointCount)

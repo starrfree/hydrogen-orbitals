@@ -1,0 +1,27 @@
+<div
+infiniteScroll
+[infiniteScrollDistance]="2"
+[infiniteScrollUpDistance]="1.5"
+[infiniteScrollThrottle]="10"
+(scrolled)="onScroll()">
+  <canvas #serviceCanvas class="service-canvas" width="500px" height="500px"></canvas>
+  <div class="main-title">
+    Hydrogen Orbitals
+  </div>
+  <div class="list-container" [style.overflow]="showExtended ? 'scroll' : 'hidden'">
+    <div *ngFor="let groupN of atomicNumbers">
+      <div class="divider">{{groupN[0][0].n}}</div>
+      <div *ngFor="let groupStep of groupN">
+        <div class="grid-container">
+          <div *ngFor="let atomicNumber of groupStep">
+            <app-atom-preview [n]="atomicNumber.n" [l]="atomicNumber.l" [m]="atomicNumber.m" (click)="expand(atomicNumber)"></app-atom-preview>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="showExtended" class="extended-container glass">
+    <div class="click-background" (click)="reduce()"></div>
+    <app-atom class="atom-extended" [n]="activeAtomicNumbers.n" [l]="activeAtomicNumbers.l" [m]="activeAtomicNumbers.m"></app-atom>
+  </div>
+</div>

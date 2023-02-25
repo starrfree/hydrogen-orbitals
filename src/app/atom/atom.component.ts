@@ -15,6 +15,10 @@ export class AtomComponent implements OnInit {
   @Input() l: number = 0
   @Input() m: number = 0
   @Input() preview: boolean = false
+  @Input() backgroundColor = 0xeeeeee
+  @Input() backgroundOpacity = 1
+  @Input() allowPhiControl = true
+  @Input() phiSection: number = 0.8
 
   @ViewChild('atomCanvas') public sceneCanvas?: ElementRef
   @ViewChild('phiIndicator') public phiIndicator?: ElementRef
@@ -25,7 +29,6 @@ export class AtomComponent implements OnInit {
 
   orbitalCalculator!: OrbitalCalculator
   pointCount!: number
-  phiSection: number = 0.8
   phiControl = {
     active: false,
     startPosition: [0, 0],
@@ -36,10 +39,8 @@ export class AtomComponent implements OnInit {
 
   ngOnInit(): void {
     this.orbitalCalculator = new OrbitalCalculator(this.n, this.l, this.m)
-    this.pointCount = this.preview ? 100000 : 800000//1400000
-    if (!this.preview) {
-      CameraControls.install( { THREE: THREE } );
-    }
+    this.pointCount = this.preview ? 100000 : 500000//1400000
+    CameraControls.install( { THREE: THREE } );
   }
 
   ngAfterViewInit(): void {
@@ -55,7 +56,7 @@ export class AtomComponent implements OnInit {
     
     // var startFrom = new Date().getTime()
     var orbitalRenderer = new OrbitalRenderer(this.pointCount)
-    orbitalRenderer.addPoints(this.n, this.l, this.m, this.scene, false, this.phiSection)
+    orbitalRenderer.addPoints(this.n, this.l, this.m, this.scene, this.preview, this.phiSection)
     // console.log(`(${this.n}, ${this.l}, ${this.m})`, (new Date().getTime() - startFrom) / 1000)
 
     const cameraControls = new CameraControls(this.camera as THREE.PerspectiveCamera, this.renderer.domElement)
@@ -112,7 +113,7 @@ export class AtomComponent implements OnInit {
     var stopDrag = (event: any) => {
       if (this.phiControl.active) {
         this.phiControl.active = false
-        this.changePhiProp()
+        this.redraw()
       }
     }
     this.phiIndicator?.nativeElement.addEventListener('pointerup', (event: any) => { stopDrag(event) })
@@ -135,17 +136,18 @@ export class AtomComponent implements OnInit {
     this.camera.position.set(0, n2, camD)
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.sceneCanvas.nativeElement,
-      antialias: true
+      antialias: true,
+      alpha: true
     })
-    this.renderer.setClearColor(0xeeeeee)
+    this.renderer.setClearColor(this.backgroundColor, this.backgroundOpacity)
     this.renderer.setPixelRatio(this.sceneCanvas.nativeElement.devicePixelRatio)
     this.renderer.setSize(this.sceneCanvas.nativeElement.clientWidth, this.sceneCanvas.nativeElement.clientHeight)
   }
 
-  changePhiProp() {
+  public redraw() {
     this.scene.remove(this.scene.children[0])
     var orbitalRenderer = new OrbitalRenderer(this.pointCount)
-    orbitalRenderer.addPoints(this.n, this.l, this.m, this.scene, false, this.phiSection)
+    orbitalRenderer.addPoints(this.n, this.l, this.m, this.scene, this.preview, this.phiSection)
     this.renderer.render(this.scene, this.camera)
   }
 
