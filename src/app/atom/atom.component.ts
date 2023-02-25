@@ -17,6 +17,7 @@ export class AtomComponent implements OnInit {
   @Input() preview: boolean = false
 
   @ViewChild('atomCanvas') public sceneCanvas?: ElementRef
+  @ViewChild('phiIndicator') public phiIndicator?: ElementRef
   scene!: THREE.Scene
   camera!: THREE.Camera
   renderer!: THREE.WebGLRenderer
@@ -24,6 +25,12 @@ export class AtomComponent implements OnInit {
 
   orbitalCalculator!: OrbitalCalculator
   pointCount!: number
+  phiSection: number = 0.8
+  phiControl = {
+    active: false,
+    startPosition: [0, 0],
+    lastPhi: 0
+  }
 
   constructor() { }
 
@@ -36,17 +43,19 @@ export class AtomComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
+    this.setupControls()
+
     var resizeCanvas = () => {
       this.sceneCanvas!.nativeElement.width = this.sceneCanvas!.nativeElement.clientWidth
       this.sceneCanvas!.nativeElement.height = this.sceneCanvas!.nativeElement.clientHeight
     }
     resizeCanvas()
-    
+
     this.createScene()
     
     // var startFrom = new Date().getTime()
     var orbitalRenderer = new OrbitalRenderer(this.pointCount)
-    orbitalRenderer.addPoints(this.n, this.l, this.m, this.scene, false)
+    orbitalRenderer.addPoints(this.n, this.l, this.m, this.scene, false, this.phiSection)
     // console.log(`(${this.n}, ${this.l}, ${this.m})`, (new Date().getTime() - startFrom) / 1000)
 
     const cameraControls = new CameraControls(this.camera as THREE.PerspectiveCamera, this.renderer.domElement)
@@ -84,6 +93,34 @@ export class AtomComponent implements OnInit {
     render()
   }
 
+  setupControls() {
+    this.phiIndicator?.nativeElement.addEventListener('pointerdown', (event: any) => {
+      this.phiControl.lastPhi = this.phiSection
+      this.phiControl.startPosition = [event.clientX, event.clientY]
+      this.phiControl.active = true
+    })
+    var move = (event: any) => {
+      if (this.phiControl.active) {
+        var dy = event.clientY - this.phiControl.startPosition[1]
+        var phiSectionNew = this.phiControl.lastPhi + dy / 100
+        phiSectionNew = Math.max(Math.min(phiSectionNew, 1), 0.5)
+        this.phiSection = phiSectionNew
+      }
+    }
+    this.phiIndicator?.nativeElement.addEventListener('pointermove', (event: any) => { move(event) })
+    this.sceneCanvas?.nativeElement.addEventListener('pointermove', (event: any) => { move(event) })
+    var stopDrag = (event: any) => {
+      if (this.phiControl.active) {
+        this.phiControl.active = false
+        this.changePhiProp()
+      }
+    }
+    this.phiIndicator?.nativeElement.addEventListener('pointerup', (event: any) => { stopDrag(event) })
+    this.sceneCanvas?.nativeElement.addEventListener('pointerup', (event: any) => { stopDrag(event) })
+    // this.sceneCanvas?.nativeElement.addEventListener('pointerleave', (event: any) => { stopDrag() })
+    // this.sceneCanvas?.nativeElement.addEventListener('pointerout', (event: any) => { stopDrag() })
+  }
+
   createScene() {
     if (!this.sceneCanvas) {return}
     var n2 = this.n * this.n
@@ -103,5 +140,16 @@ export class AtomComponent implements OnInit {
     this.renderer.setClearColor(0xeeeeee)
     this.renderer.setPixelRatio(this.sceneCanvas.nativeElement.devicePixelRatio)
     this.renderer.setSize(this.sceneCanvas.nativeElement.clientWidth, this.sceneCanvas.nativeElement.clientHeight)
+  }
+
+  changePhiProp() {
+    this.scene.remove(this.scene.children[0])
+    var orbitalRenderer = new OrbitalRenderer(this.pointCount)
+    orbitalRenderer.addPoints(this.n, this.l, this.m, this.scene, false, this.phiSection)
+    this.renderer.render(this.scene, this.camera)
+  }
+
+  getSemiDiskTransform(sign: -1 | 1) {
+    return `rotate(${180 * (1 - this.phiSection) * sign}, 50, 50)`
   }
 }

@@ -5,6 +5,7 @@ import { InfiniteScrollModule } from "ngx-infinite-scroll";
 import { AppComponent } from './app.component';
 import { AtomComponent } from './atom/atom.component';
 import { AtomPreviewComponent } from './atom-preview/atom-preview.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { AtomPreviewComponent } from './atom-preview/atom-preview.component';
   ],
   imports: [
     BrowserModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

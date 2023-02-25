@@ -16,6 +16,8 @@ export class AppComponent {
     m: 0
   }
   atomicNumbers: {n: number, l: number, m: number}[][][] = []
+  disableScroll = () => {console.warn("disableScroll", "not initialized")}
+  enableScroll = () => {console.warn("enableScroll", "not initialized")}
 
   constructor(private orbitalRendererService: OrbitalRendererService) {
   }
@@ -28,6 +30,9 @@ export class AppComponent {
   
   ngAfterViewInit() {
     this.orbitalRendererService.canvas = this.serviceCanvas.nativeElement
+    var scrollControls = this.setupScroll()
+    this.disableScroll = scrollControls[0]
+    this.enableScroll = scrollControls[1]
   }
 
   addGroupN(n: number) {
@@ -53,6 +58,12 @@ export class AppComponent {
   expand(atomicNumber: {n: number, l: number, m: number}) {
     this.activeAtomicNumbers = atomicNumber
     this.showExtended = !this.showExtended
+    this.disableScroll()
+  }
+
+  reduce() {
+    this.showExtended = false
+    this.enableScroll()
   }
 
   onScroll() {
@@ -66,5 +77,46 @@ export class AppComponent {
     }
     lastGroupN.push(this.addGroupStep(n, step + 1))
     // this.atomicNumbers[this.atomicNumbers.length - 1] = lastGroupN
+  }
+
+  setupScroll() {
+    var keys: any = {37: 1, 38: 1, 39: 1, 40: 1};
+    var supportsPassive = false;
+    try {
+      window.addEventListener("test", () => {}, Object.defineProperty({}, 'passive', {
+        get: () => { supportsPassive = true; } 
+      }));
+    } catch(e) {}
+    var wheelOpt: any = supportsPassive ? { passive: false } : false;
+    var wheelEvent: any = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
+    const preventDefault = (e: any) => {
+      e.preventDefault();
+    }
+    
+    const preventDefaultForScrollKeys = (e: any) => {
+      if (keys[e.keyCode]) {
+        preventDefault(e);
+        return false;
+      }
+      return true
+    }
+
+    // call this to Disable
+    const disableScroll = () => {
+      window.addEventListener('DOMMouseScroll', preventDefault, false); // older FF
+      window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
+      window.addEventListener('touchmove', preventDefault, wheelOpt); // mobile
+      window.addEventListener('keydown', preventDefaultForScrollKeys, false);
+    }
+    
+    // call this to Enable
+    const enableScroll = () => {
+      window.removeEventListener('DOMMouseScroll', preventDefault, false);
+      window.removeEventListener(wheelEvent, preventDefault, wheelOpt); 
+      window.removeEventListener('touchmove', preventDefault, wheelOpt);
+      window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
+    }
+
+    return [disableScroll, enableScroll]
   }
 }

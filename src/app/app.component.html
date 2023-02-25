@@ -8,7 +8,7 @@ infiniteScroll
   <div class="main-title">
     Hydrogen Orbitals
   </div>
-  <div class="list-container">
+  <div class="list-container" [style.overflow]="showExtended ? 'scroll' : 'hidden'">
     <div *ngFor="let groupN of atomicNumbers">
       <div class="divider">{{groupN[0][0].n}}</div>
       <div *ngFor="let groupStep of groupN">
@@ -21,7 +21,7 @@ infiniteScroll
     </div>
   </div>
   <div *ngIf="showExtended" class="extended-container glass">
-    <div class="click-background" (click)="showExtended = false"></div>
+    <div class="click-background" (click)="reduce()"></div>
     <app-atom class="atom-extended" [n]="activeAtomicNumbers.n" [l]="activeAtomicNumbers.l" [m]="activeAtomicNumbers.m"></app-atom>
   </div>
 </div>

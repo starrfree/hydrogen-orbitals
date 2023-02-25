@@ -41,7 +41,7 @@ export class OrbitalRenderer {
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight)
   }
 
-  addPoints(n: number, l: number, m: number, scene: THREE.Scene, preview: boolean) {
+  addPoints(n: number, l: number, m: number, scene: THREE.Scene, preview: boolean, phiSection: number = 0.75) {
     var n2 = n * n
     var geometry
     if (preview) {
@@ -62,7 +62,7 @@ export class OrbitalRenderer {
     var sinphi = Math.sin(phi)
 
     const orbitalCalculator = new OrbitalCalculator(n, l, m)
-    orbitalCalculator.randomPoints(this.pointCount, preview ? 0.75 : 0.8, (i, point) => {
+    orbitalCalculator.randomPoints(this.pointCount, phiSection, (i, point) => {
       o.position.x = point.x * costheta - point.y * sintheta
       var newy = point.x * sintheta + point.y * costheta
       o.position.y = newy * cosphi - point.z * sinphi

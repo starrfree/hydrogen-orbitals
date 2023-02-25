@@ -1,1 +1,10 @@
 <canvas #atomCanvas class="canvas"></canvas>
+<div class="tools">
+  <!-- <input type="range" min="0.5" max="1" value="0.8" step="0.01" [(ngModel)]="phiSection" (change)="changePhiProp()"> -->
+  <div #phiIndicator class="phi-indicator">
+    <svg viewBox="0 0 100 100">
+      <path d="M 50 0 A 50 50 0 0 1 50 100" fill="#888" [attr.transform]="getSemiDiskTransform(-1)" />
+      <path d="M 50 0 A 50 50 0 0 0 50 100" fill="#888" [attr.transform]="getSemiDiskTransform(1)" />
+    </svg>
+  </div>
+</div>
