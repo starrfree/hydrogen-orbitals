@@ -34,6 +34,7 @@ export class AtomComponent implements OnInit {
     startPosition: [0, 0],
     lastPhi: 0
   }
+  public destroy = () => {}
 
   constructor() { }
 
@@ -60,12 +61,23 @@ export class AtomComponent implements OnInit {
     // console.log(`(${this.n}, ${this.l}, ${this.m})`, (new Date().getTime() - startFrom) / 1000)
 
     const cameraControls = new CameraControls(this.camera as THREE.PerspectiveCamera, this.renderer.domElement)
-    if (this.preview) {
-      cameraControls.mouseButtons.wheel = CameraControls.ACTION.NONE
-      cameraControls.mouseButtons.middle = CameraControls.ACTION.NONE
-      cameraControls.touches.two = CameraControls.ACTION.NONE
-      cameraControls.touches.three = CameraControls.ACTION.NONE
+    // if (this.preview) {
+    //   cameraControls.mouseButtons.wheel = CameraControls.ACTION.NONE
+    //   cameraControls.mouseButtons.middle = CameraControls.ACTION.NONE
+    //   cameraControls.touches.two = CameraControls.ACTION.NONE
+    //   cameraControls.touches.three = CameraControls.ACTION.NONE
+    // }
+    cameraControls.rotatePolarTo(Math.PI / 4, false)
+    cameraControls.rotateAzimuthTo(Math.PI / 6, false)
+    cameraControls.smoothTime = 0.25
+    cameraControls.rotatePolarTo(Math.PI / 2 - 0.05, true)
+    cameraControls.rotateAzimuthTo(0, true)
+
+    this.destroy = () => {
+      cameraControls.dispose()
+      this.renderer.forceContextLoss()
     }
+
     const clock = new THREE.Clock()
     var lastUpdate = new Date().getTime()
     var didReset = true
@@ -127,13 +139,7 @@ export class AtomComponent implements OnInit {
     var n2 = this.n * this.n
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(40, this.sceneCanvas.nativeElement.clientWidth / this.sceneCanvas.nativeElement.clientHeight, 0.1, 1000 * n2)
-    var camD: number = 7 * n2
-    if (this.n <= 2) {
-      camD = 9 * n2
-    } else if (this.n <= 4 && this.l <= 1) {
-      camD = 8 * n2
-    }
-    this.camera.position.set(0, n2, camD)
+    this.camera.position.set(0, n2, this.getCameraDistance())
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.sceneCanvas.nativeElement,
       antialias: true,
@@ -142,6 +148,17 @@ export class AtomComponent implements OnInit {
     this.renderer.setClearColor(this.backgroundColor, this.backgroundOpacity)
     this.renderer.setPixelRatio(this.sceneCanvas.nativeElement.devicePixelRatio)
     this.renderer.setSize(this.sceneCanvas.nativeElement.clientWidth, this.sceneCanvas.nativeElement.clientHeight)
+  }
+
+  getCameraDistance() {
+    var n2 = this.n * this.n
+    var camD: number = 7 * n2
+    if (this.n <= 2) {
+      camD = 9 * n2
+    } else if (this.n <= 4 && this.l <= 1) {
+      camD = 8 * n2
+    }
+    return camD
   }
 
   public redraw() {

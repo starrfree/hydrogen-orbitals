@@ -39,6 +39,9 @@ export class AtomViewComponent implements OnInit {
       if (urlParams['sliceControl']) {
         this.allowPhiControl = urlParams['sliceControl'] != 'false'
       }
+      if (urlParams['slicecontrol']) {
+        this.allowPhiControl = urlParams['slicecontrol'] != 'false'
+      }
       var phiSection = this.phiSection
       if (urlParams['slice']) {
         phiSection = +urlParams['slice']

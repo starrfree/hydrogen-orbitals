@@ -22,6 +22,6 @@ infiniteScroll
   </div>
   <div *ngIf="showExtended" class="extended-container glass">
     <div class="click-background" (click)="reduce()"></div>
-    <app-atom class="atom-extended" [n]="activeAtomicNumbers.n" [l]="activeAtomicNumbers.l" [m]="activeAtomicNumbers.m"></app-atom>
+    <app-atom #extendedView class="atom-extended" [n]="activeAtomicNumbers.n" [l]="activeAtomicNumbers.l" [m]="activeAtomicNumbers.m"></app-atom>
   </div>
 </div>

@@ -39,24 +39,6 @@ export class OrbitalCalculator {
     }
   }
 
-  private laguerrePolynomial(n: number, x: number) {
-    if (n == 0) {
-      return 1
-    } else if (n == 1) {
-      return 1 - x
-    } else {
-      var L0 = 1
-      var L1 = 1 - x
-      var Ln: number = 0
-      for (var i = 2; i <= n; i++) {
-        Ln = ((2 * i - 1 - x) * L1 - (i - 1) * L0) / i
-        L0 = L1
-        L1 = Ln
-      }
-      return Ln
-    }
-  }
-
   private generalizedLaguerrePolynomial(a: number, n: number, x: number) {
     if (n == 0) {
       return 1

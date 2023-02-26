@@ -8,6 +8,7 @@ import { OrbitalRendererService } from '../orbital-renderer.service';
 })
 export class OrbitalsListComponent implements OnInit {
   @ViewChild('serviceCanvas') public serviceCanvas!: ElementRef
+  @ViewChild('extendedView') public extendedView!: ElementRef
   
   showExtended = false
   activeAtomicNumbers = {
@@ -62,6 +63,7 @@ export class OrbitalsListComponent implements OnInit {
   }
 
   reduce() {
+    (this.extendedView as any).destroy()
     this.showExtended = false
     this.enableScroll()
   }
