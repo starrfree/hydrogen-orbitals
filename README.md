@@ -43,4 +43,6 @@ Here is a recap of the different parameters:
 
 Here is an example of an HTML element you can add to your website:
 
-```<iframe src="http://hydrogen.starfree.app/orbital?n=6&l=3&m=1&slice=0.8&slicecontrol=false&autorotate=false&preview=false&interaction=true" frameborder="0" width="400px" height="400px"></iframe>```
+```html
+<iframe src="http://hydrogen.starfree.app/orbital?n=6&l=3&m=1&slice=0.8&slicecontrol=false&autorotate=false&preview=false&interaction=true" frameborder="0" width="400px" height="400px"></iframe>
+```
