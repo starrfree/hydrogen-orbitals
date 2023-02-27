@@ -53,9 +53,14 @@
   column-gap: 20px;
   row-gap: 20px;
   padding: 10px;
-  padding-left: 20px;
   width: 100%;
   margin-bottom: 15px;
+}
+
+@media (min-width: 440px) {
+  .grid-container {
+    padding-left: 20px;
+  }
 }
 
 @media (min-width: 440px) {
