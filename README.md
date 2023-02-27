@@ -41,7 +41,7 @@ Here is a recap of the different parameters:
 | interaction | allow user interactions | `true` or `false` | `true` |
 
 
-Here is an example of an HTML element you can add to your website:
+The following is an example of an HTML element you can add to your website:
 
 ```html
 <iframe src="http://hydrogen.starfree.app/orbital
