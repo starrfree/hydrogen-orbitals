@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { OrbitalCalculator } from '../scripts/orbital-calculator'
 import * as THREE from 'three';
 import CameraControls from 'camera-controls';
@@ -19,6 +19,10 @@ export class AtomComponent implements OnInit {
   @Input() backgroundOpacity = 1
   @Input() allowPhiControl = true
   @Input() phiSection: number = 0.8
+  @Input() autoRotate: boolean = false
+  @Input() embed: boolean = false
+  @Input() interaction: boolean = true
+  @Output() close = new EventEmitter<any>()
 
   @ViewChild('atomCanvas') public sceneCanvas?: ElementRef
   @ViewChild('phiIndicator') public phiIndicator?: ElementRef
@@ -61,12 +65,17 @@ export class AtomComponent implements OnInit {
     // console.log(`(${this.n}, ${this.l}, ${this.m})`, (new Date().getTime() - startFrom) / 1000)
 
     const cameraControls = new CameraControls(this.camera as THREE.PerspectiveCamera, this.renderer.domElement)
-    // if (this.preview) {
-    //   cameraControls.mouseButtons.wheel = CameraControls.ACTION.NONE
-    //   cameraControls.mouseButtons.middle = CameraControls.ACTION.NONE
-    //   cameraControls.touches.two = CameraControls.ACTION.NONE
-    //   cameraControls.touches.three = CameraControls.ACTION.NONE
-    // }
+    
+    if (!this.interaction) {
+      cameraControls.mouseButtons.wheel = CameraControls.ACTION.NONE
+      cameraControls.mouseButtons.left = CameraControls.ACTION.NONE
+      cameraControls.mouseButtons.right = CameraControls.ACTION.NONE
+      cameraControls.mouseButtons.middle = CameraControls.ACTION.NONE
+      cameraControls.touches.one = CameraControls.ACTION.NONE
+      cameraControls.touches.two = CameraControls.ACTION.NONE
+      cameraControls.touches.three = CameraControls.ACTION.NONE
+    }
+
     cameraControls.rotatePolarTo(Math.PI / 4, false)
     cameraControls.rotateAzimuthTo(Math.PI / 6, false)
     cameraControls.smoothTime = 0.25
@@ -83,6 +92,9 @@ export class AtomComponent implements OnInit {
     var didReset = true
     var render = () => {
       var dt = clock.getDelta();
+      if (this.autoRotate) {
+        cameraControls.rotate(0.2 * dt, 0, false)
+      }
       var controlsUpdate = cameraControls.update(dt)
       if (controlsUpdate) {
         this.renderer.render(this.scene, this.camera)
@@ -170,5 +182,9 @@ export class AtomComponent implements OnInit {
 
   getSemiDiskTransform(sign: -1 | 1) {
     return `rotate(${180 * (1 - this.phiSection) * sign}, 50, 50)`
+  }
+
+  closeExtendedView() {
+    this.close.emit()
   }
 }

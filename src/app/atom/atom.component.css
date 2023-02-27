@@ -2,6 +2,7 @@
   width: inherit;
   height: inherit;
   border-radius: 15px;
+  /* cursor: all-scroll; */
 }
 
 .tools {
@@ -13,6 +14,7 @@
 .phi-indicator {
   width: 50px;
   height: 50px;
+  cursor: ns-resize;
   transition: transform 100ms;
 }
 
@@ -21,5 +23,18 @@
 }
 
 .phi-indicator:hover {
+  transform: scale(1.1);
+}
+
+.close-button {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  cursor: pointer;
+  width: 25px;
+  transition: transform 100ms;
+}
+
+.close-button:hover {
   transform: scale(1.1);
 }

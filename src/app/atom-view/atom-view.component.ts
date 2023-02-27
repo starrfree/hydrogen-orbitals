@@ -15,6 +15,8 @@ export class AtomViewComponent implements OnInit {
   preview: boolean = false
   allowPhiControl: boolean = true
   phiSection: number = 0.8
+  autoRotate: boolean = false
+  interaction: boolean = true
 
   constructor(private activatedRoute: ActivatedRoute) { }
 
@@ -36,11 +38,20 @@ export class AtomViewComponent implements OnInit {
       if (urlParams['preview']) {
         this.preview = urlParams['preview'] != 'false'
       }
-      if (urlParams['sliceControl']) {
-        this.allowPhiControl = urlParams['sliceControl'] != 'false'
+      if (urlParams['autoRotate']) {
+        this.autoRotate = urlParams['autoRotate'] == 'true'
+      }
+      if (urlParams['autorotate']) {
+        this.autoRotate = urlParams['autorotate'] == 'true'
       }
       if (urlParams['slicecontrol']) {
         this.allowPhiControl = urlParams['slicecontrol'] != 'false'
+      }
+      if (urlParams['sliceControl']) {
+        this.allowPhiControl = urlParams['sliceControl'] != 'false'
+      }
+      if (urlParams['interaction']) {
+        this.interaction = urlParams['interaction'] != 'false'
       }
       var phiSection = this.phiSection
       if (urlParams['slice']) {

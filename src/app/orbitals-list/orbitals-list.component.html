@@ -1,3 +1,4 @@
+<iframe src="http://localhost:4200/orbital?n=6&l=3&m=1&slice=0.8&slicecontrol=false&autorotate=false&preview=false&interaction=true" frameborder="0" width="400px" height="400px"></iframe>
 <div
 infiniteScroll
 [infiniteScrollDistance]="2"
@@ -7,6 +8,14 @@ infiniteScroll
   <canvas #serviceCanvas class="service-canvas" width="500px" height="500px"></canvas>
   <div class="main-title">
     Hydrogen Orbitals
+    <div class="subtitle-container">
+      <div class="subtitle">
+        code and help on <a href="https://starfree.app">GitHub</a>
+      </div>
+      <div class="subtitle">
+        more apps on <a href="https://starfree.app">starfree.app</a>
+      </div>
+    </div>
   </div>
   <div class="list-container" [style.overflow]="showExtended ? 'scroll' : 'hidden'">
     <div *ngFor="let groupN of atomicNumbers">
@@ -22,6 +31,6 @@ infiniteScroll
   </div>
   <div *ngIf="showExtended" class="extended-container glass">
     <div class="click-background" (click)="reduce()"></div>
-    <app-atom #extendedView class="atom-extended" [n]="activeAtomicNumbers.n" [l]="activeAtomicNumbers.l" [m]="activeAtomicNumbers.m"></app-atom>
+    <app-atom #extendedView class="atom-extended" [n]="activeAtomicNumbers.n" [l]="activeAtomicNumbers.l" [m]="activeAtomicNumbers.m" (close)="reduce()"></app-atom>
   </div>
 </div>

@@ -1,12 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
 
 body {
   background-color: #fff;
   margin: 0;
   /* font-family: 'Lato', sans-serif; */
   /* font-family: Arial, Helvetica, sans-serif; */
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 400;
+  /* font-family: 'Open Sans', sans-serif; */
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
   user-select: none;
 }
+
+a {
+  text-decoration: underline;
+  color: inherit;
+}
+
+/* a:hover {
+  font-weight: 600;
+} */
