@@ -32,7 +32,7 @@ Here is a recap of the different parameters:
 | Parameter  | Description | Value | Default |
 | ------------- | ------------- | ---------- | ---------- |
 | n | principal quantum number | integer from `1` to `∞` | `1` |
-| l | azimuthal quantum number l | integer from `0` to `n - 1` | `0` |
+| l | azimuthal quantum number l | integer from `0` to<br>`n - 1` | `0` |
 | m | magnetic quantum number m | integer from `-l` to `l` | `0` |
 | slice | orbital slice proportion | float from `0` to `1` | `0.8` |
 | slicecontrol | display slice control | `true` or `false` | `true` |
