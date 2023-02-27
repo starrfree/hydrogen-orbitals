@@ -38,7 +38,7 @@ Here is a recap of the different parameters:
 | slicecontrol | display slice control | `true` or `false` | `true` |
 | autorotate | make the orbital slowly rotate | `true` or `false` | `false` |
 | preview | display a lighter version: faster to load, lower resolution | `true` or `false` | `false` |
-| interaction | allow user interactions: zoom, rotate | `true` or `false` | `true` |
+| interaction | allow user interactions | `true` or `false` | `true` |
 
 
 Here is an example of an HTML element you can add to your website:
