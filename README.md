@@ -1,6 +1,6 @@
 # Hydrogen Atom Orbitals
 
-[Hydrogen Atom Orbitals](https://hydrogen.starfree.app) is a website that allows to explore and visualize the different orbitals of the hydrogen atom.
+[hydrogen.starfree.app](https://hydrogen.starfree.app) is a website that allows to explore and visualize the different orbitals of the hydrogen atom.
 
 ## Quantum numbers
 
