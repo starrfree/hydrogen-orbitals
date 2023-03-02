@@ -1,0 +1,21 @@
+<div class="title-bar">
+  <img class="search" src="../../assets/magnifyingglass.svg" alt="search">
+  (<input class="quantum-number-input" type="text" [(ngModel)]="nText" (focusout)="setOrbital()" (keydown.enter)="blur()">,
+  <input class="quantum-number-input" type="text" [(ngModel)]="lText" (focusout)="setOrbital()" (keydown.enter)="blur()">,
+  <input class="quantum-number-input" type="text" [(ngModel)]="mText" (focusout)="setOrbital()" (keydown.enter)="blur()">)
+  <div *ngIf="error" class="error"></div>
+  <a class="menu" href="/">
+    <img src="../../assets/square.grid.3x3.fill.svg" alt="list">
+  </a>
+</div>
+<div class="subtitle-container">
+  <div class="subtitle">
+    code and help on <a href="https://github.com/starrfree/hydrogen-orbitals#hydrogen-atom-orbitals">GitHub</a>
+  </div>
+  <div class="subtitle">
+    more apps on <a href="https://starfree.app">starfree.app</a>
+  </div>
+</div>
+<div class="atom-container">
+  <app-atom #atom *ngIf="showAtom" class="atom" [embed]="true" [n]="n" [l]="l" [m]="m"></app-atom>
+</div>

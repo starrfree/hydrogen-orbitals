@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { OrbitalsListComponent } from './orbitals-list/orbitals-list.component';
 import { AtomViewComponent } from './atom-view/atom-view.component';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { AtomViewComponent } from './atom-view/atom-view.component';
     AtomComponent,
     AtomPreviewComponent,
     OrbitalsListComponent,
-    AtomViewComponent
+    AtomViewComponent,
+    SearchComponent
   ],
   imports: [
     BrowserModule,

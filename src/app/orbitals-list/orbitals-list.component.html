@@ -5,15 +5,20 @@ infiniteScroll
 [infiniteScrollThrottle]="10"
 (scrolled)="onScroll()">
   <canvas #serviceCanvas class="service-canvas" width="500px" height="500px"></canvas>
-  <div class="main-title">
-    Hydrogen Orbitals
-    <div class="subtitle-container">
-      <div class="subtitle">
-        code and help on <a href="https://github.com/starrfree/hydrogen-orbitals#hydrogen-atom-orbitals">GitHub</a>
-      </div>
-      <div class="subtitle">
-        more apps on <a href="https://starfree.app">starfree.app</a>
-      </div>
+  <div class="title-bar">
+    <div class="title">
+      Hydrogen Orbitals
+    </div>
+    <a class="search" href="/search">
+      <img src="../../assets/magnifyingglass.svg" alt="search">
+    </a>
+  </div>
+  <div class="subtitle-container">
+    <div class="subtitle">
+      code and help on <a href="https://github.com/starrfree/hydrogen-orbitals#hydrogen-atom-orbitals">GitHub</a>
+    </div>
+    <div class="subtitle">
+      more apps on <a href="https://starfree.app">starfree.app</a>
     </div>
   </div>
   <div class="list-container" [style.overflow]="showExtended ? 'scroll' : 'hidden'">
